@@ -1,0 +1,30 @@
+{
+  "name": "@diapi",
+  "module": "index.ts",
+  "version": "0.0.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun run build.mjs",
+    "build:pre": "bun run build"
+  },
+  "files": ["dist"],
+  "keywords": ["bun", "api"],
+  "devDependencies": {
+    "@types/bun": "latest",
+    "bun-plugin-dts": "^0.2.3",
+    "typescript": "^5.0.0"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/zerK4/diapi-pluto",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zerK4/diapi-pluto.git"
+  },
+  "bugs": "https://github.com/zerK4/diapi-pluto/issues",
+  "author": "Sebastian Pavel <sebastian.v.pavel@gmail.com  >",
+  "dependencies": {
+    "axios": "^1.6.8"
+  }
+}
