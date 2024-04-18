@@ -1,7 +1,7 @@
 {
-  "name": "@diapi",
+  "name": "diapio",
   "module": "index.ts",
-  "version": "0.0.1",
+  "version": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
