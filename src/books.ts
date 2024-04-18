@@ -36,7 +36,7 @@ class Diapi {
     };
     id?: string;
   }): Promise<T> {
-    const headers = { "Authorization": `Bearer ${this.apiKey}` };
+    const headers = { Authorization: `Bearer ${this.apiKey}` };
 
     try {
       const response = await axios({
@@ -136,7 +136,7 @@ class Diapi {
     id: string;
     data: {
       key: string;
-      value: string;
+      value: any;
     };
   }): Promise<ApiResponse> {
     const { content, message } = await this._makeRequest({
@@ -190,6 +190,19 @@ class Diapi {
         clear: true,
         data,
       },
+    });
+
+    return {
+      content,
+      message,
+    };
+  }
+
+  async removeOne({ id }: { id: string }) {
+    const { content, message } = await this._makeRequest({
+      method: "delete",
+      url: "books",
+      id,
     });
 
     return {

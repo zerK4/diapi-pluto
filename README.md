@@ -73,3 +73,11 @@ const { content, message } = await diapi.addAndReplace({
   },
 });
 ```
+
+- Delete one by id:
+
+```typescript
+const { content, message } = await diapi.removeOne({
+  id: "e76ac813-33df-4ee8-9b02-16019863b224",
+});
+```
