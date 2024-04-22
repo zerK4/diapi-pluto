@@ -10,10 +10,29 @@ bun install diapio
 
 ## Usage
 
+Create a type and pass it to the Diapi constructor.
+
 ```typescript
   import {Diapi} from 'diapio';
 
-  const diapi = new Diapi(<your api key from Diapi website>)
+  type Api = {
+    avatar: string;
+    birthday: string;
+    email: string;
+    firstName: string;
+    id: number;
+    index: string;
+    lastName: string;
+    sex: string;
+    subscriptionTier: string;
+  }
+
+  const diapi = new Diapi<Api>(<your api key from Diapi website>, <the base url of instance you are using, also from diapi website or your localhost if you are selfhosting>)
+
+  // ex: const diapi = new Diapi<Api>(
+  // "diapi-d9cd4bfb-da10-4595-8106-46f89f4e1e39-8oFZpMQe5CzJLmVHDsdw19",
+  // "http://localhost:3002/api/v1",
+  )
 
   const {content, message} = diapi.getAll()
 ```
@@ -76,8 +95,17 @@ const { content, message } = await diapi.addAndReplace({
 
 - Delete one by id:
 
+> Deleting by id is simplified so you can delete by any key you want.
+> This will delete all the occurences of the key-value pair you are looking for.
+
+````typescript
+
 ```typescript
 const { content, message } = await diapi.removeOne({
-  id: "e76ac813-33df-4ee8-9b02-16019863b224",
+  id: "name=John",
 });
-```
+
+const { content, message } = await diapi.removeOne({
+  id: "id=alsdja78dsaidajsndakd",
+});
+````
