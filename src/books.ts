@@ -1,26 +1,25 @@
 import axios from "axios";
 
-interface ApiResponse {
-  // Define the structure of your API responses here
-  // This is a generic interface, you can add specific properties for each endpoint
-  content: any;
+type ApiResponse<ContentApiResponse> = {
+  content: ContentApiResponse;
   message: string;
-  [key: string]: any;
-}
+};
 
-class Diapi {
+class Diapi<ContentApiResponse> {
   private readonly apiKey: string;
   private readonly baseUrl: string;
+  public response: ContentApiResponse | any;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, baseUrl: string) {
     if (!apiKey) {
       throw new Error("API key required for initialization");
     }
     this.apiKey = apiKey;
-    this.baseUrl = "http://localhost:3002/api/v1";
+    this.baseUrl = baseUrl;
+    this.response = undefined;
   }
 
-  private async _makeRequest<T extends ApiResponse>({
+  private async _makeRequest<ContentApiResponse>({
     method,
     url,
     data,
@@ -35,7 +34,7 @@ class Diapi {
       value: string;
     };
     id?: string;
-  }): Promise<T> {
+  }) {
     const headers = { Authorization: `Bearer ${this.apiKey}` };
 
     try {
@@ -49,8 +48,8 @@ class Diapi {
         data,
         headers,
       });
-
-      return response.data;
+      console.log(response, "the response");
+      return response.data as ApiResponse<ContentApiResponse>;
     } catch (error: any) {
       throw new Error(`API request failed: ${error.message}`);
     }
@@ -68,15 +67,13 @@ class Diapi {
    *   message: string
    * }
    */
-  async getAll(): Promise<ApiResponse> {
-    const { content, message } = await this._makeRequest({
+  async getAll(): Promise<ApiResponse<ContentApiResponse[]>> {
+    const data = await this._makeRequest<ContentApiResponse[]>({
       method: "get",
       url: "books",
     });
-    return {
-      content,
-      message,
-    };
+
+    return data as ApiResponse<ContentApiResponse[]>;
   }
 
   /**
@@ -92,8 +89,8 @@ class Diapi {
   }: {
     key: string;
     value: string;
-  }): Promise<ApiResponse> {
-    const { content, message } = await this._makeRequest({
+  }): Promise<ApiResponse<ContentApiResponse[]>> {
+    const data = await this._makeRequest<ContentApiResponse[]>({
       method: "get",
       url: "books",
       query: {
@@ -101,10 +98,7 @@ class Diapi {
         value,
       },
     });
-    return {
-      content,
-      message,
-    };
+    return data as ApiResponse<ContentApiResponse[]>;
   }
 
   /**
@@ -112,16 +106,20 @@ class Diapi {
    *
    * Filters the array and returns the provided ID.
    */
-  async getOne({ id }: { id: string }): Promise<ApiResponse> {
-    const { content, message } = await this._makeRequest({
+  async getOne({
+    id,
+  }: {
+    id: string;
+  }): Promise<ApiResponse<ContentApiResponse>> {
+    const data = await this._makeRequest<ContentApiResponse>({
       method: "get",
       url: "books",
       id,
     });
-    return {
-      content,
-      message,
-    };
+
+    console.log(data, "asd");
+
+    return data as ApiResponse<ContentApiResponse>;
   }
 
   /**
@@ -138,18 +136,15 @@ class Diapi {
       key: string;
       value: any;
     };
-  }): Promise<ApiResponse> {
-    const { content, message } = await this._makeRequest({
+  }): Promise<ApiResponse<ContentApiResponse>> {
+    const response = await this._makeRequest({
       method: "put",
       url: "books",
       id,
       data,
     });
 
-    return {
-      content,
-      message,
-    };
+    return response as ApiResponse<ContentApiResponse>;
   }
 
   /**
@@ -161,8 +156,12 @@ class Diapi {
    *
    * It will return the added element/s.
    */
-  async addNew({ data }: { data: any }): Promise<ApiResponse> {
-    const { content, message } = await this._makeRequest({
+  async addNew({
+    data,
+  }: {
+    data: any;
+  }): Promise<ApiResponse<ContentApiResponse>> {
+    const response = await this._makeRequest({
       method: "post",
       url: "books",
       data: {
@@ -171,10 +170,7 @@ class Diapi {
       },
     });
 
-    return {
-      content,
-      message,
-    };
+    return response as ApiResponse<ContentApiResponse>;
   }
 
   /**
@@ -182,8 +178,12 @@ class Diapi {
    *
    * I replaces the array you entered on the database with whatever you provide now.
    */
-  async addAndReplace({ data }: { data: any }): Promise<ApiResponse> {
-    const { content, message } = await this._makeRequest({
+  async addAndReplace({
+    data,
+  }: {
+    data: any;
+  }): Promise<ApiResponse<ContentApiResponse[]>> {
+    const response = await this._makeRequest({
       method: "post",
       url: "books",
       data: {
@@ -192,21 +192,25 @@ class Diapi {
       },
     });
 
-    return {
-      content,
-      message,
-    };
+    return response as ApiResponse<ContentApiResponse[]>;
   }
 
-  async removeOne({ id }: { id: string }) {
-    const { content, message } = await this._makeRequest({
+  /**
+   * Remove one element from the array.
+   * ex: Delete element with key "name" and value "John"
+   *
+   * ** id: "name=John"
+   *
+   * In this way you can delete one element filtering by any of the element's keys
+   */
+  async removeOne({ key, value }: { key: string; value: string }) {
+    const { message } = await this._makeRequest({
       method: "delete",
       url: "books",
-      id,
+      id: `${key}=${value}`,
     });
 
     return {
-      content,
       message,
     };
   }
