@@ -5,6 +5,9 @@ type ApiResponse<ContentApiResponse> = {
   message: string;
 };
 
+/**
+ * Requires the API key and the base URL.
+ */
 class Diapi<ContentApiResponse> {
   private readonly apiKey: string;
   private readonly baseUrl: string;
