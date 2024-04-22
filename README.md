@@ -95,7 +95,7 @@ const { content, message } = await diapi.addAndReplace({
 });
 ```
 
-- Delete one by id:
+- Delete by key-value:
 
 > Deleting by id is simplified so you can delete by any key you want.
 > This will delete all the occurences of the key-value pair you are looking for.
