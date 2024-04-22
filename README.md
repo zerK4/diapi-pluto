@@ -11,6 +11,7 @@ bun install diapio
 ## Usage
 
 Create a type and pass it to the Diapi constructor.
+
 Get your API key from the Diapi website and the base url of the instance you are using.
 
 ```typescript
