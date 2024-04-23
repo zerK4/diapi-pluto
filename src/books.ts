@@ -1,4 +1,5 @@
 import axios from "axios";
+// Make typesafety for the postModel, the queries and what might be an issue.
 
 type ApiResponse<ContentApiResponse> = {
   content: ContentApiResponse;
@@ -13,7 +14,7 @@ class Diapi<ContentApiResponse> {
   private readonly baseUrl: string;
   public response: ContentApiResponse | any;
 
-  constructor(apiKey: string, baseUrl: string) {
+  constructor({ apiKey, baseUrl }: { apiKey: string; baseUrl: string }) {
     if (!apiKey) {
       throw new Error("API key required for initialization");
     }
@@ -31,15 +32,16 @@ class Diapi<ContentApiResponse> {
   }: {
     method: "get" | "post" | "put" | "delete";
     url: string;
-    data?: any;
+    data?: ContentApiResponse;
     query?: {
-      key: string;
+      key: keyof ContentApiResponse extends string
+        ? keyof ContentApiResponse
+        : string;
       value: string;
     };
     id?: string;
   }) {
     const headers = { Authorization: `Bearer ${this.apiKey}` };
-
     try {
       const response = await axios({
         method,
@@ -51,8 +53,7 @@ class Diapi<ContentApiResponse> {
         data,
         headers,
       });
-      console.log(response, "the response");
-      return response.data as ApiResponse<ContentApiResponse>;
+      return response.data;
     } catch (error: any) {
       throw new Error(`API request failed: ${error.message}`);
     }
@@ -90,7 +91,9 @@ class Diapi<ContentApiResponse> {
     key,
     value,
   }: {
-    key: string;
+    key: keyof ContentApiResponse extends string
+      ? keyof ContentApiResponse
+      : string;
     value: string;
   }): Promise<ApiResponse<ContentApiResponse[]>> {
     const data = await this._makeRequest<ContentApiResponse[]>({
@@ -120,8 +123,6 @@ class Diapi<ContentApiResponse> {
       id,
     });
 
-    console.log(data, "asd");
-
     return data as ApiResponse<ContentApiResponse>;
   }
 
@@ -136,7 +137,9 @@ class Diapi<ContentApiResponse> {
   }: {
     id: string;
     data: {
-      key: string;
+      key: keyof ContentApiResponse extends string
+        ? keyof ContentApiResponse
+        : string;
       value: any;
     };
   }): Promise<ApiResponse<ContentApiResponse>> {
@@ -162,7 +165,7 @@ class Diapi<ContentApiResponse> {
   async addNew({
     data,
   }: {
-    data: any;
+    data: ContentApiResponse | ContentApiResponse[];
   }): Promise<ApiResponse<ContentApiResponse>> {
     const response = await this._makeRequest({
       method: "post",
@@ -181,11 +184,12 @@ class Diapi<ContentApiResponse> {
    *
    * I replaces the array you entered on the database with whatever you provide now.
    */
-  async addAndReplace({
-    data,
-  }: {
-    data: any;
-  }): Promise<ApiResponse<ContentApiResponse[]>> {
+  async addAndReplace({ data }: { data: ContentApiResponse[] }): Promise<
+    ApiResponse<{
+      clear: boolean;
+      data: ContentApiResponse[];
+    }>
+  > {
     const response = await this._makeRequest({
       method: "post",
       url: "books",
@@ -195,7 +199,10 @@ class Diapi<ContentApiResponse> {
       },
     });
 
-    return response as ApiResponse<ContentApiResponse[]>;
+    return response as ApiResponse<{
+      clear: boolean;
+      data: ContentApiResponse[];
+    }>;
   }
 
   /**
@@ -206,7 +213,15 @@ class Diapi<ContentApiResponse> {
    *
    * In this way you can delete one element filtering by any of the element's keys
    */
-  async removeOne({ key, value }: { key: string; value: string }) {
+  async removeOne({
+    key,
+    value,
+  }: {
+    key: keyof ContentApiResponse extends string
+      ? keyof ContentApiResponse
+      : string;
+    value: string;
+  }) {
     const { message } = await this._makeRequest({
       method: "delete",
       url: "books",

@@ -9,13 +9,8 @@
     "build": "bun run build.mjs",
     "build:pre": "bun run build"
   },
-  "files": [
-    "dist"
-  ],
-  "keywords": [
-    "bun",
-    "api"
-  ],
+  "files": ["dist"],
+  "keywords": ["bun", "api"],
   "devDependencies": {
     "@types/bun": "latest",
     "bun-plugin-dts": "^0.2.3",
