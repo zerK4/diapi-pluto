@@ -29,11 +29,14 @@ Get your API key from the Diapi website and the base url of the instance you are
     subscriptionTier: string;
   }
 
-  const diapi = new Diapi<Api>(<your api key from Diapi website>, <the base url of instance you are using, also from diapi website or your localhost if you are selfhosting>)
+  const diapi = new Diapi<Api>({
+    apiKey: "diapi-d9cd4bfb-da10-4595-8106-46f89f4e1e39-8oFZpMQe5CzJLmVHDsdw19",
+    baseUrl: "http://localhost:3002/api/v1",
+  })
 
   // ex: const diapi = new Diapi<Api>(
   // "diapi-d9cd4bfb-da10-4595-8106-46f89f4e1e39-8oFZpMQe5CzJLmVHDsdw19",
-  // "http://localhost:3002/api/v1",
+  // "http://localhost:3002/api/v1 || Copy it from the Diapio website.",
   )
 
   const {content, message} = diapi.getAll()
@@ -51,7 +54,7 @@ const { content, message } = diapi.getAll();
 
 ```typescript
 const { content, message } = diapi.queryIt({
-  key: "name",
+  key: "name", // Type safety based on the type you passed to the constructor.
   value: "John big boy",
 });
 ```
@@ -70,7 +73,7 @@ const { content, message } = diapi.getOne({
 const { content, message } = await diapi.updateOne({
   id: "",
   data: {
-    key: "name",
+    key: "name", // Type safety based on the type you passed to constructor.
     value: "new name",
   },
 });
@@ -80,7 +83,8 @@ const { content, message } = await diapi.updateOne({
 
 ```typescript
 const { content, message } = await diapi.addNew({
-  data: [{}] || {}, // You can add an array of objects and it will add them all spreaded into your current data or only one object.
+  data: [{}] || {}, // Type safety based on the type you passed to constructor.
+  // You can add an array of objects and it will add them all spreaded into your current data or only one object.
 });
 ```
 
@@ -89,9 +93,19 @@ const { content, message } = await diapi.addNew({
 
 ```typescript
 const { content, message } = await diapi.addAndReplace({
-  data: {
-    title: "Test",
-  },
+  data: [
+    {
+      avatar: "something",
+      birthday: "something",
+      email: "something",
+      firstName: "something",
+      id: 1,
+      index: "something",
+      lastName: "something",
+      sex: "something",
+      subscriptionTier: "something",
+    },
+  ], // This should match the type you passed to the constructor.
 });
 ```
 
@@ -100,14 +114,9 @@ const { content, message } = await diapi.addAndReplace({
 > Deleting by id is simplified so you can delete by any key you want.
 > This will delete all the occurences of the key-value pair you are looking for.
 
-````typescript
-
 ```typescript
 const { content, message } = await diapi.removeOne({
-  id: "name=John",
+  key: "name", // Type safety based on the type you passed to the constructor.
+  value: "John big boy",
 });
-
-const { content, message } = await diapi.removeOne({
-  id: "id=alsdja78dsaidajsndakd",
-});
-````
+```
